@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html class="bg-white">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="og:title" content="Money Pit">
+        <meta name="og:description" content="Money Pit | A stock market simulator where the goal is to lose.">
+        <meta name="og:image" content="{{ url_for('static', filename='images/banner-image.png') }}">
+        <meta name="og:url" content="https://money-pit.person20020.dev/">
+        <meta name="og:type" content="website">
+        <meta name="og:site_name" content="Money Pit">
+        <meta name="og:locale" content="en_US">
+        <meta name="og:icon" content="{{ url_for('static', filename='images/logo.png') }}">
+
+		<script defer data-domain="money-pit.person20020.dev" src="https://analytics.person20020.dev/js/script.file-downloads.hash.outbound-links.js"></script>
+		<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const header = document.querySelector('header');
+                const headerHeight = header?.offsetHeight || 0;
+
+                const roundedHeight = Math.ceil(headerHeight / 4) * 4;
+
+                const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+                headings.forEach(element => {
+                    element.style.scrollMarginTop = `${roundedHeight}px`;
+                })
+            })
+        </script>
+
+        <title>{% block title %} Money Pit {% endblock %} | Money Pit</title>
+        <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    </head>
+    <body class="bg-neutral-900 bg-cover bg-center min-h-screen bg-no-repeat bg-fixed flex flex-col">
+        {% include "header.html" %}
+        
+        <main class="flex-grow pt-17">
+            {% block content %}
+            
+            <h1>Money Pit</h1>
+            <h2>
+                If you are seeing this, something probably went wrong.
+            </h2>
+
+            {% endblock %}
+        </main>
+        
+        {% include "footer.html" %}
+    </body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html class="bg-white">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="og:title" content="Money Pit">
+        <meta name="og:description" content="Money Pit | A stock market simulator where the goal is to lose.">
+        <meta name="og:image" content="{{ url_for('static', filename='images/banner-image.png') }}">
+        <meta name="og:url" content="https://money-pit.person20020.dev/">
+        <meta name="og:type" content="website">
+        <meta name="og:site_name" content="Money Pit">
+        <meta name="og:locale" content="en_US">
+        <meta name="og:icon" content="{{ url_for('static', filename='images/logo.png') }}">
+
+		<script defer data-domain="money-pit.person20020.dev" src="https://analytics.person20020.dev/js/script.file-downloads.hash.outbound-links.js"></script>
+		<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const header = document.querySelector('header');
+                const headerHeight = header?.offsetHeight || 0;
+
+                const roundedHeight = Math.ceil(headerHeight / 4) * 4;
+
+                const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+                headings.forEach(element => {
+                    element.style.scrollMarginTop = `${roundedHeight}px`;
+                })
+            })
+        </script>
+
+        <title>{% block title %} Money Pit {% endblock %} | Money Pit</title>
+        <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+
+        <link rel="stylesheet" href="/static/tailwind.css">
+    </head>
+    <body class="bg-neutral-900 bg-cover bg-center min-h-screen bg-no-repeat bg-fixed flex flex-col">
+        
+        <header id="header" class="bg-slate-900 border-b-2 border-slate-950">
+            <nav class="flex flex-row overflow-x-auto overflow-y-hidden scrollbar-hide p-2">
+            {% if logged_in %}
+                <div class="flex flex-grow">
+                    <a href="/">Money Pit</a>
+                    <a href="/search">Search</a>
+                    <a href="/portfolio">Portfolio</a>
+                    <a href="/leaderboard">Leaderboard</a>
+                    <a href="/watchlist">Watchlist</a>
+                </div>
+                <div class="flex justify-center">
+                    <a href="/account">Account</a>
+                    <a>Log out</a>
+                </div>
+            {% else %}
+                <div class="flex flex-grow items-center gap-x-4">
+                    <a class="text-4xl">Money Pit</a>
+                    <a class="text-2xl" href="/test">test</a>
+                </div>
+                <div class="flex items-center gap-x-1">
+                    <a class="p-3 rounded-2xl border-2 border-slate-500 bg-slate-700" href="/login">Log in</a>
+                    <a class="p-3 rounded-2xl border-2 border-slate-500 bg-slate-700" href="/register">Register</a>
+                </div>
+            {% endif %}
+            </nav>
+        </header>
+        <main class="flex-grow pt-17 bg-neutral-950">
+            <div class="flex flex-col items-center h-screen">
+                <h1 class="text-slate-300">Money Pit</h1>
+                <h2 class="text-slate-300">
+                    The stock market simulator where the goal is to lose.
+                </h2>
+            </div>
+        </main>
+        
+        {% include "footer.html" %}
+    </body>
+</html>
+
+
+
