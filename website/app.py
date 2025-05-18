@@ -88,4 +88,4 @@ def leaderboard():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=os.getenv("DEBUG"), port=os.getenv("PORT"))
