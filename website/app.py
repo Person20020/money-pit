@@ -1,7 +1,9 @@
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 import os
 import sqlite3
+
+from fetch_data import lookup
 
 
 load_dotenv()
@@ -23,8 +25,8 @@ if not os.access(db_path, os.R_OK):
 
 @app.route('/')
 def index():
-    if request.cookies.get('user_id') is None:
-        return render_template('index.html', logged_in=False)
+    if session.get('user_id') is not None:
+        return render_template('index.html')
     else:
         return render_template('index.html')
     
