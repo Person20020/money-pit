@@ -27,7 +27,17 @@ a {
     @apply text-slate-400 hover:text-slate-400 hover:underline hover:decoration-wavy;
 }
 .nav-links {
-    @apply no-underline hover:no-underline;
+    @apply no-underline hover:no-underline whitespace-nowrap;
+}
+
+label {
+    @apply text-slate-300;
+}
+input {
+    @apply px-2 rounded-lg border-2 border-slate-400 bg-slate-600 nav-links text-slate-300;
+}
+button {
+    @apply p-1 px-3 rounded-2xl border-2 border-slate-500 bg-slate-800 nav-links hover:bg-slate-700 text-slate-300 whitespace-nowrap;
 }
 
 .glow-effect {

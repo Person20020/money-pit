@@ -18,8 +18,10 @@
       z-index: -1;
     }
   </style>
+  <link rel="stylesheet" href="/static/tailwind.css">
 </head>
 <body>
+  {% include 'header.html' %}
   <canvas id="stock-bg"></canvas>
     <script>
         const canvas = document.getElementById("stock-bg");
@@ -136,9 +138,11 @@
         animate();
 
     </script>
-    <div style="position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 3em; font-family: sans-serif; text-shadow: 0 0 20px #fff, 0 0 40px #fff; pointer-events: none;">
+    <div style="text-shadow: 0 0 20px #fff, 0 0 40px #fff;" class="fixed top-1/2 w-full mx-auto text-center text-white pointer-events-none -translate-y-20">
+      <h1>
         404 - Page Not Found
-        <p>Could not find the path '/{{ path }}'</p>
+      </h1>
+      <h2>Could not find the path '/{{ path }}'</h2>
     </div>
 </body>
 </html>

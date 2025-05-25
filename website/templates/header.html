@@ -1,12 +1,12 @@
 <header id="header" class="bg-slate-900 border-b-2 border-slate-950">
-    <nav class="flex flex-row overflow-x-auto overflow-y-hidden scrollbar-hide p-2">
+    <nav class="flex flex-row overflow-x-auto overflow-y-hidden scrollbar-hide p-2 gap-x-10">
     {% if logged_in %}
-        <div class="flex flex-grow items-center gap-x-4">
-            <a href="/" class="text-4xl nav-links">Money Pit</a>
-            <a href="/search" class="text-2xl nav-links">Search</a>
-            <a href="/portfolio" class="text-2xl nav-links">Portfolio</a>
-            <a href="/leaderboard" class="text-2xl nav-links">Leaderboard</a>
-            <a href="/watchlist" class="text-2xl nav-links">Watchlist</a>
+        <div class="flex flex-grow items-center gap-x-1">
+            <a href="/" class="text-4xl nav-links px-2">Money Pit</a>
+            <a href="/search" class="text-2xl nav-links py-2 px-3 rounded-lg hover:bg-slate-800">Search</a>
+            <a href="/portfolio" class="text-2xl nav-links py-2 px-3 rounded-lg hover:bg-slate-800">Portfolio</a>
+            <a href="/leaderboard" class="text-2xl nav-links py-2 px-3 rounded-lg hover:bg-slate-800">Leaderboard</a>
+            <a href="/watchlist" class="text-2xl nav-links py-2 px-3 rounded-lg hover:bg-slate-800">Watchlist</a>
         </div>
         <div class="flex items-center gap-x-2">
             <a href="/account" class="p-1 px-3 rounded-2xl border-2 border-slate-500 bg-slate-800 nav-links hover:bg-slate-700">Account</a>
@@ -14,8 +14,8 @@
         </div>
     {% else %}
         <div class="flex flex-grow items-center gap-x-4">
-            <a class="text-4xl nav-links" href="/">Money Pit</a>
-            <a class="text-2xl nav-links" href="/test">test</a>
+            <a class="text-4xl nav-links px-2 whitespace-nowrap" href="/">Money Pit</a>
+            <a class="text-2xl nav-links py-2 px-3 rounded-lg hover:bg-slate-800" href="/test">test</a>
         </div>
         <div class="flex items-center gap-x-2">
             <a class="p-1 px-3 rounded-2xl border-2 border-slate-500 bg-slate-800 nav-links hover:bg-slate-700" href="/login">Log in</a>

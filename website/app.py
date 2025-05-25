@@ -189,6 +189,8 @@ def favicon():
 
 @app.route('/<path:unknown_path>')
 def unknown_path(unknown_path):
+    if request.cookies.get('session'):
+        return render_template('404.html', path=unknown_path, logged_in=True), 404
     return render_template('404.html', path=unknown_path), 404
 
 
