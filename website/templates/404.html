@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <title>Animated Glowing Graph Lines</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #0a0a0a;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: block;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stock-bg"></canvas>
+    <script>
+        const canvas = document.getElementById("stock-bg");
+        const ctx = canvas.getContext("2d");
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener("resize", () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+
+        class Line {
+          constructor() {
+            this.generate();
+          }
+
+          generate() {
+            let stepWidth = 60;
+            let spikyness = .8;
+
+            this.points = [];
+            let x = 0;
+            let y = height / 2 + (Math.random() - 0.5) * height / 3;
+
+            this.length = width / stepWidth + stepWidth;
+            // this.length = 75; //Math.floor(40 + Math.random() * 60);
+            for (let i = 0; i < this.length; i++) {
+                if (i == 0) {
+                  x = 0;
+                  y = height / 2;
+                }
+                else {
+                  x += stepWidth; //+ Math.random() * 10;
+                  y += (Math.random() - 0.5) * spikyness * height / 3;
+                }
+              this.points.push({ x, y });
+            }
+
+            this.color = `hsl(${Math.floor(Math.random() * 360)}, 100%, 70%)`;
+            this.progress = 0;
+            this.alpha = 1;
+            this.finished = false;
+
+            // Scale points to fit the canvas
+            let maxYDeviation = 0;
+            this.points.forEach(point => {
+              let deviation = Math.abs(point.y - (height / 2));
+              if (deviation > maxYDeviation) {
+                maxYDeviation = deviation;
+              }
+            });
+            // Find scaling factor
+            let scaleFactor = height / (2 * maxYDeviation);
+            this.points.forEach(point => {
+              point.y *= scaleFactor;
+            });
+          }
+
+          update() {
+            if (this.progress < this.points.length) {
+              this.progress += 1;
+            } else {
+              this.alpha -= 0.01;
+              if (this.alpha <= 0) {
+                this.generate(); // Restart with new line
+              }
+            }
+          }
+
+          draw(ctx) {
+            if (this.progress < 2) return;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(this.points[0].x, this.points[0].y);
+            for (let i = 1; i < this.progress; i++) {
+              ctx.lineTo(this.points[i].x, this.points[i].y);
+            }
+            ctx.strokeStyle = this.color;
+            ctx.globalAlpha = this.alpha;
+            ctx.shadowColor = this.color;
+            ctx.shadowBlur = 15;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+
+        const lines = Array.from({ length: 2 }, () => new Line());
+
+        // let frameCount = 0;
+        function animate() {
+          /*
+          frameCount++;
+          if (frameCount % 300 === 0) {
+            ctx.clearRect(0, 0, width, height);
+          }
+          else {
+          */
+          ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+          ctx.fillRect(0, 0, width, height);
+          //}
+            
+          lines.forEach(line => {
+            line.update();
+            line.draw(ctx);
+          });
+
+          requestAnimationFrame(animate);
+        }
+
+        animate();
+
+    </script>
+    <div style="position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 3em; font-family: sans-serif; text-shadow: 0 0 20px #fff, 0 0 40px #fff; pointer-events: none;">
+        404 - Page Not Found
+        <p>Could not find the path '/{{ path }}'</p>
+    </div>
+</body>
+</html>

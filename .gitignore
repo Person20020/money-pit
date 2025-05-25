@@ -2,4 +2,7 @@ node_modules/
 venv/
 **/.env
 logs/
-
+database.db
+__pycache__/
+.DS_Store
+.vscode/

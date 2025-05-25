@@ -36,45 +36,28 @@
     </head>
     <body class="bg-neutral-950 bg-cover bg-center min-h-screen bg-no-repeat bg-fixed flex flex-col">
         
-        <header id="header" class="bg-slate-900 border-b-2 border-slate-950">
-            <nav class="flex flex-row overflow-x-auto overflow-y-hidden scrollbar-hide p-2">
-            {% if logged_in %}
-                <div class="flex flex-grow">
-                    <a href="/">Money Pit</a>
-                    <a href="/search">Search</a>
-                    <a href="/portfolio">Portfolio</a>
-                    <a href="/leaderboard">Leaderboard</a>
-                    <a href="/watchlist">Watchlist</a>
-                </div>
-                <div class="flex justify-center">
-                    <a href="/account">Account</a>
-                    <a>Log out</a>
-                </div>
-            {% else %}
-                <div class="flex flex-grow items-center gap-x-4">
-                    <a class="text-4xl">Money Pit</a>
-                    <a class="text-2xl" href="/test">test</a>
-                </div>
-                <div class="flex items-center gap-x-1">
-                    <a class="p-1 px-3 rounded-2xl border-2 border-slate-500 bg-slate-700" href="/login">Log in</a>
-                    <a class="p-1 px-3 rounded-2xl border-2 border-slate-500 bg-slate-700" href="/register">Register</a>
-                </div>
-            {% endif %}
-            </nav>
-        </header>
-        <main class="flex-grow p-8 pt-17">
-            <div class="flex flex-col items-center h-screen">
+        {% include "header.html" %}
+        <main class="flex-grow p-12 pt-17">
+            <div class="flex flex-col items-center">
                 <h1 class="text-slate-300">Money Pit</h1>
-                <h2 class="text-slate-300">
+                <h2 class="text-slate-300 text-center">
                     The stock market simulator where the goal is to lose.
                 </h2>
                 <img src="{{ url_for('static', filename='images/large.png') }}" alt="Stock graph" class="w-1/3 h-auto mt-4">
+                <div class="flex flex-col items-center md:w-[700px]">
+                    <p>
+                        Compete against others and trade using realtime market prices to loose your money as fast as possible!
+                    </p>
+                    <p>
+                        Initially you will start with $1 million and you will attempt to get down to 5% of your starting capital. The reason for this is that you will almost never get all of the way to 0 because it would require the company to go bankrupt which doesn't happen often enough.
+                    </p>
+                </div>
             </div>
-        </main>
-        
-        {% include "footer.html" %}
-    </body>
-</html>
+            </main>
+            
+            {% include "footer.html" %}
+        </body>
+        </html>
 
 
 

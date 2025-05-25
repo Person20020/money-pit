@@ -29,23 +29,27 @@
             })
         </script>
 
-        <title>{% block title %} Money Pit {% endblock %} | Money Pit</title>
+        <title>{% block title %}Money Pit{% endblock %} | Money Pit</title>
         <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
-    </head>
-    <body class="bg-neutral-900 bg-cover bg-center min-h-screen bg-no-repeat bg-fixed flex flex-col">
-        {% include "header.html" %}
-        
-        <main class="flex-grow pt-17">
-            {% block content %}
-            
-            <h1>Money Pit</h1>
-            <h2>
-                If you are seeing this, something probably went wrong.
-            </h2>
 
-            {% endblock %}
+        <link rel="stylesheet" href="/static/tailwind.css">
+    </head>
+    <body class="bg-neutral-950 bg-cover bg-center min-h-screen bg-no-repeat bg-fixed flex flex-col">
+        {% include "header.html" %}
+        <main class="flex-grow p-12 pt-17">
+            {% if error %}
+            <div id="banner" class="bg-blue-300 text-black px-6 py-1 rounded-md mb-4 flex items-center justify-between shadow-lg lg:max-w-50% mx-auto">
+                <span>
+                    {{ error }}
+                </span>
+                <button onclick="document.getElementById('banner').remove()" aria-label="Close banner" class="ml-4 text-xl font-bold focus:outline-none p-2">
+                    &times;
+                </button>
+            </div>
+            {% endif %}
+            {% block content %}{% endblock %}
         </main>
-        
+            
         {% include "footer.html" %}
     </body>
 </html>
