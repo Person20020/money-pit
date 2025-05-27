@@ -178,12 +178,19 @@ def watchlist():
 
 
 
+@app.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'GET':
+        return render_template('reset-password.html')
+    else:
+        return render_template('reset-password.html', error="This feature is not implemented yet.")
+
 
 
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory('static/images', 'favicon.ico')@app.route('/favicon.ico')
+    return send_from_directory('static/images', 'favicon.ico')
 def favicon():
     return send_from_directory('/static/images', 'favicon.ico')
 

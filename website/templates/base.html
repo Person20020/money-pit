@@ -34,19 +34,34 @@
 
         <link rel="stylesheet" href="/static/tailwind.css">
     </head>
-    <body class="bg-neutral-950 bg-cover bg-center min-h-screen bg-no-repeat bg-fixed flex flex-col">
+    <body class="bg-gray-950 bg-cover bg-center min-h-screen bg-no-repeat bg-fixed flex flex-col">
         {% include "header.html" %}
-        <main class="flex-grow p-12 pt-17">
+        <main class="flex-grow p-2 sm:p-12 pt-17">
+            
+            <!-- Display message if it exists -->            
             {% if error %}
-            <div id="banner" class="bg-blue-300 text-black px-6 py-1 rounded-md mb-4 flex items-center justify-between shadow-lg lg:max-w-50% mx-auto">
+            <div id="banner" class="bg-blue-300 text-black pl-5 pr-2 py-1 rounded-lg mb-4 flex items-center justify-between shadow-lg lg:max-w-50% mx-auto">
                 <span>
                     {{ error }}
                 </span>
-                <button onclick="document.getElementById('banner').remove()" aria-label="Close banner" class="ml-4 text-xl font-bold focus:outline-none p-2">
+                <button onclick="document.getElementById('banner').remove()" aria-label="Close banner" class="text-xl font-bold focus:outline-none px-3 m-1">
                     &times;
                 </button>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        setTimeout(() => {
+                            const banner = document.getElementById('banner');
+                            if (banner) {
+                                banner.style.transition = 'opacity 0.5s';
+                                banner.style.opacity = '0';
+                                setTimeout(() => banner.remove(), 500);
+                            }
+                        }, 10000);
+                    });
+                </script>
             </div>
             {% endif %}
+            
             {% block content %}{% endblock %}
         </main>
             

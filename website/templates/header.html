@@ -1,5 +1,5 @@
 <header id="header" class="bg-slate-900 border-b-2 border-slate-950">
-    <nav class="flex flex-row overflow-x-auto overflow-y-hidden scrollbar-hide p-2 gap-x-10">
+    <nav class="flex flex-row overflow-x-auto overflow-y-hidden scrollbar-hide p-2 gap-x-5">
     {% if logged_in %}
         <div class="flex flex-grow items-center gap-x-1">
             <a href="/" class="text-4xl nav-links px-2">Money Pit</a>
@@ -9,8 +9,8 @@
             <a href="/watchlist" class="text-2xl nav-links py-2 px-3 rounded-lg hover:bg-slate-800">Watchlist</a>
         </div>
         <div class="flex items-center gap-x-2">
-            <a href="/account" class="p-1 px-3 rounded-2xl border-2 border-slate-500 bg-slate-800 nav-links hover:bg-slate-700">Account</a>
-            <a href="/logout" class="p-1 px-3 rounded-2xl border-2 border-slate-500 bg-slate-800 nav-links hover:bg-slate-700">Log out</a>
+            <a href="/account" class="nav-buttons nav-links">Account</a>
+            <a href="/logout" class="nav-buttons nav-links">Log out</a>
         </div>
     {% else %}
         <div class="flex flex-grow items-center gap-x-4">
@@ -18,8 +18,8 @@
             <a class="text-2xl nav-links py-2 px-3 rounded-lg hover:bg-slate-800" href="/test">test</a>
         </div>
         <div class="flex items-center gap-x-2">
-            <a class="p-1 px-3 rounded-2xl border-2 border-slate-500 bg-slate-800 nav-links hover:bg-slate-700" href="/login">Log in</a>
-            <a class="p-1 px-3 rounded-2xl border-2 border-slate-500 bg-slate-800 nav-links hover:bg-slate-700" href="/register">Register</a>
+            <a class="nav-buttons nav-links" href="/login">Log in</a>
+            <a class="nav-buttons nav-links" href="/register">Register</a>
         </div>
     {% endif %}
     </nav>
