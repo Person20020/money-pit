@@ -1,6 +1,10 @@
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, session, send_from_directory
+from mailjet_rest import Client
 import os
+import random
+import re
+import requests
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -18,6 +22,106 @@ if not os.path.exists(db_path):
     raise FileNotFoundError(f"Database file not found at {db_path}.")
 if not os.access(db_path, os.R_OK):
     raise PermissionError(f"Database file at {db_path} is not readable.")
+
+
+
+# Email
+sender_email = os.getenv("SENDER_EMAIL")
+sender_name = os.getenv("SENDER_NAME", "Money Pit")
+mj_api_key_public = os.getenv("MJ_API_KEY_PUBLIC")
+mj_api_key_private = os.getenv("MJ_API_KEY_PRIVATE")
+
+if not sender_email:
+    raise ValueError("SENDER_EMAIL environment variable is not set.")
+
+mailjet = Client(auth=(mj_api_key_public, mj_api_key_private), version='v3.1')
+
+
+
+
+
+
+
+def send_verification_email(recipient_email, recipient_name, ip,):
+    # Get the user's location based on IP address
+    try:
+        location_response = requests.get(f"https://ip.hackclub.com/ip/{ip}").json()
+        print("1")
+        city = location_response.get('city_name')
+        print("2")
+        country = location_response.get('country_name')
+        print("3")
+    except Exception as e:
+        raise Exception(f"Failed to get location for IP {ip}: {e}")
+    
+    verification_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+    print(f"Sending verification email to {recipient_email} with code: {verification_code}")
+
+    email = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body>
+            <div class="container mx-auto m-5 mt-10 bg-slate-800">
+                <h1>
+                    Reset Password
+                </h1>
+                <h3>
+                    We have received a request to reset your password from the ip address {ip} at {city} in the country {country}. Please use the code below to reset your password:
+                </h3>
+                <div style="padding: 2px; padding-left: 12px; padding-right: 4px; background-color: #374151; border-radius: 8px; color: #cbd5e1;">
+                    <p><strong>{verification_code}</strong></p>
+                </div>
+                <p>
+                    If you did not request this, you can safely ignore this email.
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+    data = {
+    'Messages': [
+                    {
+                            "From": {
+                                    "Email": f"{sender_email}",
+                                    "Name": f"{sender_name}"
+                            },
+                            "To": [
+                                    {
+                                            "Email": f"{recipient_email}",
+                                            "Name": f"{recipient_name}"
+                                    }
+                            ],
+                            "Subject": "Password Reset",
+                            "TextPart": "Here is your password code.",
+                            "HTMLPart": f"{email}",
+                    }
+            ]
+    }
+    try:
+        result = mailjet.send.create(data=data)
+        return result, verification_code
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        raise Exception(f"Failed to send email: {e}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Before anything loads, if the person is not signed in, direct them to /
@@ -82,53 +186,104 @@ def signin():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
-        return render_template('register.html')
+        if session.get("step") != 2:
+            return render_template('register.html')
+        else:
+            return render_template('register.html', step=2)
     else:
-        # Handle the registration form submission
-        if not request.form.get("username"):
-            return render_template('register.html', error="Missing username.")
-        if not request.form.get("password"):
-            return render_template('register.html', error="Missing password.")
-        if not request.form.get("confirm_password"):
-            return render_template('register.html', error="Missing confirm password.")
+        if session.get("step") != 2:
+            # Handle the registration form submission
+            if not request.form.get("email"):
+                return render_template('register.html', error="Missing email.")
+            if not request.form.get("username"):
+                return render_template('register.html', error="Missing username.")
+            if not request.form.get("password"):
+                return render_template('register.html', error="Missing password.")
+            if not request.form.get("confirm_password"):
+                return render_template('register.html', error="Missing confirm password.")
 
-        username = request.form.get('username')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
+            email = request.form.get('email')
+            if re.match("^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9-.]{2,25}$", email) is None:
+                return render_template('register.html', error="Invalid email address.")
+            username = request.form.get('username')
+            password = request.form.get('password')
+            confirm_password = request.form.get('confirm_password')
 
-        if password != confirm_password:
-            return render_template('register.html', error="Passwords do not match.")
+            if password != confirm_password:
+                return render_template('register.html', error="Passwords do not match.")
 
-        db = sqlite3.connect(db_path)
-        cursor = db.cursor()
-        rows = cursor.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchall()
-        db.close()
+            try:
+                db = sqlite3.connect(db_path)
+                cursor = db.cursor()
+                rows = cursor.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchall()
+                db.close()
+            except sqlite3.Error as e:
+                return render_template('register.html', error=f"Database error: {e}")
+            
+            if len(rows) > 0:
+                return render_template('register.html', error=f"Account with username '{username}' already exists.")
+            
+            pw_hash = generate_password_hash(password)
 
-        if len(rows) > 0:
-            return render_template('register.html', error=f"Account with username '{username}' already exists already exists.")
-        
-        pw_hash = generate_password_hash(password)
+            try:
+                # Insert the new user into the database
+                # Change this to add to a cache which will be transferred to the database after verification
+                db = sqlite3.connect(db_path)
+                cursor = db.cursor()
+                cursor.execute("INSERT INTO users (email, username, pw_hash) VALUES (?, ?, ?)", (email, username, pw_hash))
+                db.commit()
+                db.close()
+            
+                db = sqlite3.connect(db_path)
+                cursor = db.cursor()
+                rows = cursor.execute("SELECT id, pw_hash FROM users WHERE username = ?", (username,)).fetchall()
+                db.close()
+            except sqlite3.Error as e:
+                return render_template('register.html', error=f"Database error: {e}")
+            
 
-        db = sqlite3.connect(db_path)
-        cursor = db.cursor()
-        cursor.execute("INSERT INTO users (username, pw_hash) VALUES (?, ?)", (username, pw_hash))
-        db.commit()
-        db.close()
-        
-        db = sqlite3.connect(db_path)
-        cursor = db.cursor()
-        rows = cursor.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchall()
-        db.close()
+            if len(rows) == 0:
+                return render_template('register.html', error="Failed to create account. Please try again.")
+            
+            user = rows[0]
+            user_id = user[0]
+            password = user[1]
+            session['user_id'] = user_id
 
-        if len(rows) == 0:
-            return render_template('register.html', error="Failed to create account. Please try again later.")
-        
-        user = rows[0]
-        user_id = user[0]
-        password = user[2]
-        session['user_id'] = user_id
+            # Get the user's IP address
+            try:
+                if 'X-Forwarded-For' in request.headers:
+                    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+                else:
+                    ip = request.remote_addr
+            except Exception as e:
+                return render_template('register.html', error=f"Failed to get IP address: {e}")
 
-        return redirect('/dashboard')
+
+
+            try:
+                response, code = send_verification_email(email, username, ip)
+            except Exception as e:
+                return render_template('register.html', error=f"Failed to send verification email: {e}")
+            
+            if not response or response.status_code != 200:
+                return render_template('register.html', error="Failed to send verification email. Please try again later.")
+            
+            # Store the verification code in the session
+            session['verification_code'] = code
+
+
+            session['step'] = 2
+            return render_template('register.html', step=2)
+        else:
+            if not request.form.get("verification_code"):
+                return render_template('register.html', step=2, error="Missing verification code.")
+            session.pop('step', None)
+            verification_code = request.form.get('verification_code')
+            if 'verification_code' not in session or session['verification_code'] != verification_code:
+                return render_template('register.html', step=2, error=f"Incorrect verification code {verification_code}.")
+            return render_template('dashboard.html', logged_in=True, error=f"This is the verification code {verification_code}. Correct.")
+
 # Aliases
 @app.route('/signup')
 def redirect_register():
@@ -191,14 +346,31 @@ def reset_password():
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory('static/images', 'favicon.ico')
-def favicon():
-    return send_from_directory('/static/images', 'favicon.ico')
 
 @app.route('/<path:unknown_path>')
 def unknown_path(unknown_path):
     if request.cookies.get('session'):
         return render_template('404.html', path=unknown_path, logged_in=True), 404
     return render_template('404.html', path=unknown_path), 404
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

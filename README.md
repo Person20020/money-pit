@@ -14,9 +14,18 @@ The app uses a sqlite database. It has this schema to create it manually or can 
 ```
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    email TEXT,
     username TEXT,
     pw_hash TEXT,
     cash NUMERIC NOT NULL DEFAULT 10000.00
 );
+CREATE TABLE signup_cache (
+    id INTEGER PRIMARY KEY NOT NULL
+    email TEXT,
+    username TEXT,
+    pw_hash TEXT,
+    verification_code TEXT,
+    expiration DATETIME DEFAULT CURRENT_TIMESTAMP
+)
 CREATE UNIQUE INDEX username ON users (username);
 ```

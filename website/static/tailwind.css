@@ -645,6 +645,21 @@ video {
   display: none;
 }
 
+.size-6 {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.size-12 {
+  width: 3rem;
+  height: 3rem;
+}
+
+.size-8 {
+  width: 2rem;
+  height: 2rem;
+}
+
 .h-20 {
   height: 5rem;
 }
@@ -950,6 +965,22 @@ video {
   background-repeat: no-repeat;
 }
 
+.fill-red-600 {
+  fill: #dc2626;
+}
+
+.stroke-red-600 {
+  stroke: #dc2626;
+}
+
+.stroke-orange-600 {
+  stroke: #ea580c;
+}
+
+.stroke-red-700 {
+  stroke: #b91c1c;
+}
+
 .p-1 {
   padding: 0.25rem;
 }
@@ -988,6 +1019,10 @@ video {
 
 .p-8 {
   padding: 2rem;
+}
+
+.p-0 {
+  padding: 0px;
 }
 
 .px-2 {
