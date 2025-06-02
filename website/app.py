@@ -173,7 +173,7 @@ def login():
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
-        rows = cursor.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchall()
+        rows = cursor.execute("SELECT id, username, pw_hash FROM users WHERE username = ?", (username,)).fetchall()
         conn.close()
         if len(rows) == 0:
             return render_template('login.html', error="Username not found.")
