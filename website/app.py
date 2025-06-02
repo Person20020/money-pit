@@ -1,3 +1,4 @@
+import datetime
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, session, send_from_directory
 from mailjet_rest import Client
@@ -6,14 +7,18 @@ import random
 import re
 import requests
 import sqlite3
+import sqlite3 # Errors idk which
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from fetch_data import lookup
+from mail import send_verification_email
 
 
 load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "default_secret_key")
+
+debug = os.getenv("DEBUG", "false").lower() == "true"
+
 
 db_path = os.getenv("DB_PATH")
 if not db_path:
@@ -25,6 +30,17 @@ if not os.access(db_path, os.R_OK):
 
 
 
+
+
+
+
+
+
+# Config variables
+start_capital = 1000000
+
+
+'''
 # Email
 sender_email = os.getenv("SENDER_EMAIL")
 sender_name = os.getenv("SENDER_NAME", "Money Pit")
@@ -35,10 +51,6 @@ if not sender_email:
     raise ValueError("SENDER_EMAIL environment variable is not set.")
 
 mailjet = Client(auth=(mj_api_key_public, mj_api_key_private), version='v3.1')
-
-
-
-
 
 
 
@@ -107,7 +119,7 @@ def send_verification_email(recipient_email, recipient_name, ip,):
     except Exception as e:
         print(f"Failed to send email: {e}")
         raise Exception(f"Failed to send email: {e}")
-
+'''
 
 
 
@@ -280,9 +292,12 @@ def register():
                 return render_template('register.html', step=2, error="Missing verification code.")
             session.pop('step', None)
             verification_code = request.form.get('verification_code')
+            """
             if 'verification_code' not in session or session['verification_code'] != verification_code:
                 return render_template('register.html', step=2, error=f"Incorrect verification code {verification_code}.")
             return render_template('dashboard.html', logged_in=True, error=f"This is the verification code {verification_code}. Correct.")
+            """
+            return redirect('/dashboard')
 
 # Aliases
 @app.route('/signup')
@@ -318,12 +333,44 @@ def portfolio():
         return redirect('/')
     return render_template('portfolio.html', logged_in=True)
 
-# A list of everyone who has completed at least one round sorted by fastest to slowest.
+# Leaderboard of most money lost
 @app.route('/leaderboard')
 def leaderboard():
+    """
     if request.cookies.get('session') is None:
         return redirect('/')
-    return render_template('leaderboard.html', logged_in=True)
+    """
+    today = str(datetime.date.today())
+    
+    try:
+        db = sqlite3.connect(db_path)
+        cursor = db.cursor()
+        db_rows = cursor.execute(f"SELECT user_id, money_lost FROM leaderboard WHERE date = ? ORDER BY money_lost DESC", (today,)).fetchall()
+        db.close()
+        if len(db_rows) < 1:
+            return render_template('leaderboard.html', logged_in=True, leaderboard_message="No entries in leaderboard.")
+
+        leaderboard_rows = []
+        for row in db_rows:
+            user_id = row[0]
+            db = sqlite3.connect(db_path)
+            cursor = db.cursor()
+            user_row = cursor.execute(f"SELECT username FROM users WHERE id = ?", (user_id,)).fetchone()
+            db.close()
+            username = user_row[0]
+            money_lost = row[1]
+            percent_money_lost = str((money_lost / start_capital) * 100) + "%"
+            built_row = {
+                'username': username,
+                'money_lost': money_lost,
+                'percent_money_lost': percent_money_lost
+            }
+            leaderboard_rows.append(built_row)
+        if len(leaderboard_rows) < 1:
+            return render_template('leaderboard.html', logged_in=True, error="No entries in leaderboard.")
+    except Exception as e: # Change this to the specific sqlite exception:
+        return render_template('leaderboard.html', logged_in=True, error=f"Error getting leaderboard: {e}")
+    return render_template('leaderboard.html', logged_in=True, leaderboard=leaderboard_rows)
 
 @app.route('/watchlist')
 def watchlist():
@@ -333,12 +380,75 @@ def watchlist():
 
 
 
+# Account and settings
+@app.route('/account')
+def account():
+    if request.cookies.get('session') is None:
+        return redirect('/')
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect('/')
+    
+    try:
+        db = sqlite3.connect(db_path)
+        cursor = db.cursor()
+        user_row = cursor.execute("SELECT email, username FROM users WHERE id = ?", (user_id,)).fetchone()
+        db.close()
+        
+        if not user_row:
+            return render_template('account.html', logged_in=True, error="User not found.")
+        
+        email, username = user_row
+    except sqlite3.Error as e:
+        return render_template('account.html', logged_in=True, error=f"Database error: {e}")
+    
+    return render_template('account.html', logged_in=True, email=email, username=username)
+
+
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password():
+    if not request.cookies.get('session'):
+        return redirect('/')
     if request.method == 'GET':
-        return render_template('reset-password.html')
+        return render_template('reset-password.html', logged_in=True)
     else:
-        return render_template('reset-password.html', error="This feature is not implemented yet.")
+        return render_template('reset-password.html', logged_in=True, error="This feature is not implemented yet.")
+
+@app.route('/change-username', methods=['GET', 'POST'])
+def change_username():
+    if not request.cookies.get('session'):
+        return redirect('/')
+    if request.method == 'GET':
+        return render_template('change-username.html', logged_in=True)
+    else:
+        if not request.form.get("new_username"):
+            return render_template('change-username.html', logged_in=True, error="Missing new username.")
+        
+        new_username = request.form.get('new_username')
+        user_id = session.get('user_id')
+        
+        if not user_id:
+            return redirect('/')
+        
+        return render_template('change-username.html', logged_in=True, error=f"new username: {new_username}.")
+
+@app.route('/change-email', methods=['GET', 'POST'])
+def change_email():
+    if not request.cookies.get('session'):
+        return redirect('/')
+    if request.method == 'GET':
+        return render_template('change-email.html', logged_in=True)
+    else:
+        if not request.form.get("new_email"):
+            return render_template('change-email.html', logged_in=True, error="Missing new email.")
+        
+        new_email = request.form.get('new_email')
+        user_id = session.get('user_id')
+        
+        if not user_id:
+            return redirect('/')
+        
+        return render_template('change-email.html', logged_in=True, error=f"new email: {new_email}.")
 
 
 
@@ -375,4 +485,4 @@ def unknown_path(unknown_path):
 
 
 if __name__ == '__main__':
-    app.run(debug=os.getenv("DEBUG"), port=os.getenv("PORT"))
+    app.run(debug=debug, port=os.getenv("PORT"))

@@ -3,6 +3,19 @@
 @tailwind components;
 
 
+
+@font-face {
+    font-family: 'Inter';
+    src: url('./Inter-VariableFont_opsz\,wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
 h1 {
     @apply text-6xl font-bold text-slate-300 pb-6;
 }
@@ -32,6 +45,27 @@ a {
 .nav-buttons {
     @apply p-1 px-3 rounded-full border-2 border-slate-500 bg-slate-800 hover:bg-slate-700;
 }
+
+.button-link {
+    @apply p-1 px-3 rounded-full border-2 border-slate-500 bg-slate-800 hover:bg-slate-700 no-underline hover:no-underline whitespace-nowrap;
+}
+
+
+.float-div {
+    @apply mx-auto w-fit bg-slate-800 p-2 pb-4 2xs:p-6 2xs:pb-6 rounded-3xl shadow-custom-light;
+}
+
+
+th, td {
+    @apply text-slate-300 p-2;
+}
+
+
+
+.dashboard-cell {
+    @apply flex flex-col items-center justify-center bg-slate-700 rounded-lg p-2 m-1 w-fit;
+}
+
 
 label {
     @apply text-slate-300;

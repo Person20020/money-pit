@@ -5,8 +5,25 @@
 
 {% block content %}
 
-
-
+<br>
+<div class="float-div flex flex-col items-center">
+    <h2 class="p-0">Dashboard</h2>
+</div>
+<br>
+<div class="float-div flex flex-wrap gap-4 items-center justify-center w-auto max-w-fit">
+    <div class="dashboard-cell">
+        <h3>Leaderboard position:</h3>
+        <p>test{{ leaderboard_position }}</p>
+    </div>
+    <div class="dashboard-cell">
+        <h3>Today's losses:</h3>
+        <p>test{{ today_losses }}</p>
+    </div>
+    <div class="dashboard-cell">
+        <h3>Your all time losses:</h3>
+        <p>test{{ all_time_losses }}</p>
+    </div>
+</div>
 
 
 {% endblock %}

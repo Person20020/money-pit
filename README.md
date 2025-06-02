@@ -17,15 +17,22 @@ CREATE TABLE users (
     email TEXT,
     username TEXT,
     pw_hash TEXT,
-    cash NUMERIC NOT NULL DEFAULT 10000.00
+    cash NUMERIC NOT NULL DEFAULT 1000000.00
 );
 CREATE TABLE signup_cache (
-    id INTEGER PRIMARY KEY NOT NULL
+    id INTEGER PRIMARY KEY NOT NULL,
     email TEXT,
     username TEXT,
     pw_hash TEXT,
     verification_code TEXT,
     expiration DATETIME DEFAULT CURRENT_TIMESTAMP
-)
+);
+CREATE TABLE leaderboard (
+    id INTEGER PRIMARY KEY NOT NULL,
+    user_id INTEGER,
+    money_lost NUMERIC,
+    date TEXT
+);
+
 CREATE UNIQUE INDEX username ON users (username);
 ```

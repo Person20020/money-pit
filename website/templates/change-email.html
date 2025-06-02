@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Change Email{% endblock %}
+
+
+
+{% block content %}
+
+
+<br>
+<div class="float-div flex flex-col justify-left">
+    <h3 class="p-1">Change Email</h3>
+    {% if not step or step != 2 %}
+    <form method="POST" action="/change-email">
+        <div class="p-1">
+            <label for="new_email" class="p-0">New Email:</label><br>
+            <input type="email" id="new_username" name="new_email" autocomplete="email" required>
+        </div>
+        <div class="p-1">
+            <button type="submit">Change email</button>
+        </div>
+    </form>
+    {% else %}
+    {% endif %}
+</div>
+
+
+{% endblock %}

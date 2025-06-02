@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Account{% endblock %}
+
+{% block content %}
+
+
+<br>
+<div class="bg-red-700 p-2 rounded-xl w-fit mx-auto">
+    <p class="w-fit">Settings aren't functional</p>
+</div>
+<br>
+<div class="float-div flex flex-col items-center">
+    <h2 class="p-0">Account</h2>
+</div>
+<br>
+<div class="float-div flex flex-col justify-left gap-y-2">
+    <div class="flex flex-col gap-y-2 bg-slate-900 p-2 rounded-xl">
+        <h3 class="p-0">Current username: <span class="bg-slate-600 px-2 py-1 rounded-md">{{ username }}</span></h3>
+        <h3 class="p-0">Current mail: <span class="bg-slate-600 px-2 py-1 rounded-md">{{ email }}</span></h3>
+    </div>
+    <div class="flex flex-row gap-x-2 bg-slate-900 p-2 rounded-xl">
+        <a href="/change-username" class="button-link">Change username</a>
+        <a href="/change-email" class="button-link">Change email</a>
+        <a href="/reset-password" class="button-link">Reset password</a>
+    </div>
+</div>
+
+
+{% endblock %}

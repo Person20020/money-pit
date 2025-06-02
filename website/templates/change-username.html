@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Change Username{% endblock %}
+
+
+
+{% block content %}
+
+
+<br>
+<div class="float-div flex flex-col justify-left">
+    <h3 class="p-1">Change Username</h3>
+    <form method="POST" action="/change-username">
+        <div class="p-1">
+            <label for="new_username" class="p-0">New Username:</label><br>
+            <input type="text" id="new_username" name="new_username" autocomplete="username" required>
+        </div>
+        <div class="p-1">
+            <button type="submit">Change username</button>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
